@@ -1,0 +1,71 @@
+#!/bin/bash
+# vim: ft=sh noet ts=4 sw=4 sts=0
+
+# This configure script is part of cjxgm/libcrude project
+
+
+main()
+{
+	local OBJS=""
+	local LIBS="-pthread"
+	LIBS="$LIBS $(pkg-config --cflags --libs libpulse-simple)"
+	LIBS="$LIBS $(pkg-config --cflags --libs jack)"
+	local CCFLAGS="$LIBS"
+	echo "# vim: ft=make noet ts=4 sw=4 sts=0" > makefile
+	gen
+	gen "CC = gcc"
+	gen "CCFLAGS = -std=gnu11 -Wall -march=native -Ofast $CCFLAGS"
+	gen
+	gen ".PHONY: all clean cleanall rebuild reconf test commit"
+	gen
+	gen "all: build build/jopa-ng"
+	gen "clean:"
+	gen -e "\trm -rf build"
+	gen "cleanall: clean"
+	gen -e "\trm -f makefile"
+	gen "rebuild: clean all"
+	gen "reconf:"
+	gen -e "\t./configure"
+	gen "test: all"
+	gen -e "\t./build/jopa-ng"
+	gen "commit: cleanall"
+	gen -e "\tgit add ."
+	gen -e "\tgit diff --cached"
+	gen -e "\tenv LANG=C git commit -a || true"
+	gen -e "\t./configure"
+	gen
+	gen "build:"
+	gen -e "\tmkdir build"
+
+	for f in src/*.c; do
+		echo -e "\e[0;32mprocessing \e[1;35m$f\e[m"
+		echo -ne "\e[1;31m"
+		gcc $CCFLAGS -MM "$f" > .dep || error
+		local target=build/$(cut -d: -f1 .dep | head -n 1)
+		OBJS="$OBJS $target";
+		gen -n "build/"
+		cat .dep >> makefile
+		gen -e "\t\$(CC) -c -o \$@ \$< \$(CCFLAGS)"
+	done
+	echo -ne "\e[m"
+	rm -f .dep
+	gen "build/jopa-ng:$OBJS"
+	gen -e "\t\$(CC) -o \$@ \$^ \$(CCFLAGS)"
+	gen
+}
+
+gen()
+{
+	echo $* >> makefile
+}
+
+error()
+{
+	echo -ne "\e[m"
+	rm -f .dep
+	exit 1
+}
+
+
+main $*
+
