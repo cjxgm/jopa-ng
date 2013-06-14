@@ -62,7 +62,7 @@ void pulse_start()
 						dbuf_size(global_dbuf_playback), NULL);
 				dbuf_unfill(global_dbuf_playback);
 			}
-			else suspend(global_suspend_playback);
+			else suspend(global_suspend_pulse);
 		}
 	}), NULL);
 
@@ -75,7 +75,7 @@ void pulse_start()
 						dbuf_size(global_dbuf_capture), NULL);
 				dbuf_fill(global_dbuf_capture);
 			}
-			else suspend(global_suspend_playback);
+			else suspend(global_suspend_pulse);
 		}
 	}), NULL);
 }

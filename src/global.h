@@ -20,7 +20,7 @@
 extern size_t    global_sample_rate;
 extern DBuf    * global_dbuf_playback;
 extern DBuf    * global_dbuf_capture;
-extern Suspend * global_suspend_playback;
+extern Suspend * global_suspend_pulse;
 
 
 

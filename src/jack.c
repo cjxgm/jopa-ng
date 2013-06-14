@@ -60,7 +60,7 @@ void jack_init()
 				dbuf_unfill(global_dbuf_capture);
 			}
 
-			wake_up(global_suspend_playback);
+			wake_up(global_suspend_pulse);
 			return 0;
 		}), NULL);
 
