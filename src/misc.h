@@ -6,25 +6,11 @@
  * 		eXerigumo Clanjor (哆啦比猫/兰威举) <cjxgm@126.com>
  */
 
-#ifndef __JOPANG$GLOBAL__
-#define __JOPANG$GLOBAL__
+#ifndef __JOPANG$MISC__
+#define __JOPANG$MISC__
 
 #include <stdlib.h>
-#include "dbuf.h"
-#include "misc.h"
-
-
-
-
-extern size_t global_sample_rate;
-extern DBuf * global_dbuf_playback;
-
-
-
-
-
-void global_init();
-void global_close();
+#include <unistd.h>
 
 
 

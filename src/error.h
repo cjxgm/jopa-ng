@@ -13,6 +13,8 @@ typedef enum ErrorCode
 {
 	ERROR_OK = 0,
 
+	ERROR_MALLOC, 
+
 	ERROR_JACK_CLIENT_OPEN,
 	ERROR_JACK_ACTIVATE,
 }

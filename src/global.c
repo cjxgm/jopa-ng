@@ -12,13 +12,14 @@
 
 
 size_t global_sample_rate;
+DBuf * global_dbuf_playback;
 
 
 
 
 void global_init()
 {
-//	global_dbuf_playback = dbuf_new(0);
+	global_dbuf_playback = dbuf_new();
 }
 
 void global_close()

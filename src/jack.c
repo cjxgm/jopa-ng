@@ -41,9 +41,9 @@ void jack_init()
 
 	jack_set_process_callback(jack,
 		$(int, (jack_nframes_t nframe, void * $unused) {
-			float * buf0 = jack_port_get_buffer(ports_in[0], nframe);
-			float * buf1 = jack_port_get_buffer(ports_in[1], nframe);
-			if (dbuf_add_stereo(global_dbuf_playback, buf0, buf1, nframe))
+			float * L = jack_port_get_buffer(ports_in[0], nframe);
+			float * R = jack_port_get_buffer(ports_in[1], nframe);
+			if (dbuf_add_stereo(global_dbuf_playback, L, R))
 				warn("got stuck when playback.");
 			return 0;
 		}), NULL);
