@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <jack/jack.h>
+#include <strings.h>
 #include "jack.h"
 #include "error.h"
 #include "global.h"
@@ -18,6 +19,7 @@
 
 static jack_client_t	* jack;
 static jack_port_t		* ports_in[2];
+static jack_port_t		* ports_out[1];
 
 
 
@@ -36,16 +38,28 @@ void jack_init()
 	jack_set_buffer_size_callback(jack,
 		$(int, (jack_nframes_t nframe, void * $unused) {
 			// this will be called once jack activated.
-			dbuf_resize(global_dbuf_playback, nframe<<1);
+			dbuf_resize(global_dbuf_playback, nframe<<1);	// stereo
+			dbuf_resize(global_dbuf_capture , nframe   );	// mono
 			return 0;
 		}), NULL);
 
 	jack_set_process_callback(jack,
 		$(int, (jack_nframes_t nframe, void * $unused) {
+			// playback
 			float * L = jack_port_get_buffer(ports_in[0], nframe);
 			float * R = jack_port_get_buffer(ports_in[1], nframe);
 			if (dbuf_add_stereo(global_dbuf_playback, L, R))
 				warn("got stuck when playback.");
+
+			// capture
+			float * buf = dbuf_used(global_dbuf_capture);
+			if (buf) {
+//				fprintf(stderr, "!\n");
+				bcopy(buf, jack_port_get_buffer(ports_out[0], nframe),
+					dbuf_size(global_dbuf_capture));
+				dbuf_unfill(global_dbuf_capture);
+			}
+
 			wake_up(global_suspend_playback);
 			return 0;
 		}), NULL);
@@ -57,6 +71,10 @@ void jack_init()
 	ports_in[1] = jack_port_register(jack, "playback_1",
 			JACK_DEFAULT_AUDIO_TYPE,
 			JackPortIsInput|JackPortIsPhysical|JackPortIsTerminal, 0);
+
+	ports_out[0] = jack_port_register(jack, "capture_0",
+			JACK_DEFAULT_AUDIO_TYPE,
+			JackPortIsOutput, 0);
 
 	// other setups
 	global_sample_rate = jack_get_sample_rate(jack);
