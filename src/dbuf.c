@@ -58,7 +58,6 @@ float * dbuf_unused(DBuf * dbuf)
 
 	dbuf_lock(dbuf);
 	float * buf = dbuf->bufs[dbuf->current];
-	dbuf->current = !dbuf->current;
 	dbuf_unlock(dbuf);
 
 	return buf;
@@ -69,6 +68,7 @@ void dbuf_fill(DBuf * dbuf)
 {
 	dbuf_lock(dbuf);
 	dbuf->filled_cnt++;
+	dbuf->current = !dbuf->current;
 	dbuf_unlock(dbuf);
 }
 
@@ -105,7 +105,20 @@ void dbuf_resize(DBuf * dbuf, size_t length)
 
 bool dbuf_add_stereo(DBuf * dbuf, float L[], float R[])
 {
-	// TODO
+	$_(buf, dbuf_unused(dbuf));
+	if (!buf) return true;
+
+	size_t n = dbuf_length(dbuf);
+	if (n & 1) throw(ERROR_DBUF_LENGTH_NOT_EVEN);
+	n >>= 1;
+
+	for (size_t i=0; i<n; i++) {
+		buf[i<<1 | 0] = L[i];
+		buf[i<<1 | 1] = R[i];
+	}
+
+	dbuf_fill(dbuf);
+
 	return false;
 }
 

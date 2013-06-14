@@ -23,6 +23,8 @@ void throw(ErrorCode err)
 
 		[ERROR_MALLOC] = "cannot allocate memory.",
 
+		[ERROR_DBUF_LENGTH_NOT_EVEN] = "dbuf length is not even.",
+
 		[ERROR_JACK_CLIENT_OPEN] = "jack_client_open failed.",
 		[ERROR_JACK_ACTIVATE   ] = "jack_activate failed.",
 	};
