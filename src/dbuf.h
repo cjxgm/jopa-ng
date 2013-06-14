@@ -49,7 +49,7 @@ static inline size_t dbuf_size  (DBuf * dbuf)
 
 // extended functions
 bool dbuf_add_stereo(DBuf * dbuf, float L[], float R[]);
-// TODO: bool dbuf_get_stereo(DBuf * dbuf, float L[], float R[]);
+bool dbuf_get_stereo(DBuf * dbuf, float L[], float R[]);
 
 #endif
 

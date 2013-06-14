@@ -122,3 +122,22 @@ bool dbuf_add_stereo(DBuf * dbuf, float L[], float R[])
 	return false;
 }
 
+bool dbuf_get_stereo(DBuf * dbuf, float L[], float R[])
+{
+	$_(buf, dbuf_used(dbuf));
+	if (!buf) return true;
+
+	size_t n = dbuf_length(dbuf);
+	if (n & 1) throw(ERROR_DBUF_LENGTH_NOT_EVEN);
+	n >>= 1;
+
+	for (size_t i=0; i<n; i++) {
+		L[i] = buf[i<<1 | 0];
+		R[i] = buf[i<<1 | 1];
+	}
+
+	dbuf_unfill(dbuf);
+
+	return false;
+}
+

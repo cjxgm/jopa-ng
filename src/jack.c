@@ -18,8 +18,8 @@
 
 
 static jack_client_t	* jack;
-static jack_port_t		* ports_in[2];
-static jack_port_t		* ports_out[1];
+static jack_port_t		* ports_in [2];
+static jack_port_t		* ports_out[2];
 
 
 
@@ -39,26 +39,31 @@ void jack_init()
 		$(int, (jack_nframes_t nframe, void * $unused) {
 			// this will be called once jack activated.
 			dbuf_resize(global_dbuf_playback, nframe<<1);	// stereo
-			dbuf_resize(global_dbuf_capture , nframe   );	// mono
+			dbuf_resize(global_dbuf_capture , nframe<<1);	// stereo
 			return 0;
 		}), NULL);
 
 	jack_set_process_callback(jack,
 		$(int, (jack_nframes_t nframe, void * $unused) {
-			// playback
-			float * L = jack_port_get_buffer(ports_in[0], nframe);
-			float * R = jack_port_get_buffer(ports_in[1], nframe);
-			if (dbuf_add_stereo(global_dbuf_playback, L, R))
-				warn("got stuck when playback.");
-
-			// capture
-			float * buf = dbuf_used(global_dbuf_capture);
-			if (buf) {
-//				fprintf(stderr, "!\n");
-				bcopy(buf, jack_port_get_buffer(ports_out[0], nframe),
-					dbuf_size(global_dbuf_capture));
-				dbuf_unfill(global_dbuf_capture);
+			{ // playback
+				float * L = jack_port_get_buffer(ports_in[0], nframe);
+				float * R = jack_port_get_buffer(ports_in[1], nframe);
+				if (dbuf_add_stereo(global_dbuf_playback, L, R))
+					warn("got stuck when playback.");
 			}
+
+			{ // capture
+				float * L = jack_port_get_buffer(ports_out[0], nframe);
+				float * R = jack_port_get_buffer(ports_out[1], nframe);
+				if (dbuf_get_stereo(global_dbuf_capture, L, R))
+					warn("got stuck when capture.");
+/*				float * buf = dbuf_used(global_dbuf_capture);
+				if (buf) {
+					bcopy(buf, jack_port_get_buffer(ports_out[0], nframe),
+						dbuf_size(global_dbuf_capture));
+					dbuf_unfill(global_dbuf_capture);
+				}
+*/			}
 
 			wake_up(global_suspend_pulse);
 			return 0;
@@ -74,7 +79,10 @@ void jack_init()
 
 	ports_out[0] = jack_port_register(jack, "capture_0",
 			JACK_DEFAULT_AUDIO_TYPE,
-			JackPortIsOutput, 0);
+			JackPortIsOutput|JackPortIsPhysical|JackPortIsTerminal, 0);
+	ports_out[1] = jack_port_register(jack, "capture_1",
+			JACK_DEFAULT_AUDIO_TYPE,
+			JackPortIsOutput|JackPortIsPhysical|JackPortIsTerminal, 0);
 
 	// other setups
 	global_sample_rate = jack_get_sample_rate(jack);
