@@ -1,4 +1,4 @@
-// vim: ft=c noet ts=4 sw=4 sts=0
+// vim: noet ts=4 sw=4 sts=0
 
 /* Licensed under the MIT License.
  *
@@ -9,9 +9,12 @@
 #ifndef __JOPANG$ERROR__
 #define __JOPANG$ERROR__
 
-typedef struct ErrorCode
+typedef enum ErrorCode
 {
 	ERROR_OK = 0,
+
+	ERROR_JACK_CLIENT_OPEN,
+	ERROR_JACK_ACTIVATE,
 }
 ErrorCode;
 

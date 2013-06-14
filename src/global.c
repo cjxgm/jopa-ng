@@ -6,12 +6,22 @@
  * 		eXerigumo Clanjor (哆啦比猫/兰威举) <cjxgm@126.com>
  */
 
-#ifndef __JOPANG$JACK__
-#define __JOPANG$JACK__
+#include "global.h"
 
-void jack_init();
-void jack_start();
-void jack_close();
 
-#endif
+
+
+size_t global_sample_rate;
+
+
+
+
+void global_init()
+{
+//	global_dbuf_playback = dbuf_new(0);
+}
+
+void global_close()
+{
+}
 

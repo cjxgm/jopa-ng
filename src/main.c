@@ -1,4 +1,4 @@
-// vim: ft=c noet ts=4 sw=4 sts=0
+// vim: noet ts=4 sw=4 sts=0
 
 /* Licensed under the MIT License.
  *
@@ -7,17 +7,22 @@
  */
 
 #include <stdio.h>
+#include <pthread.h>
+#include "global.h"
+#include "jack.h"
+#include "pulse.h"
 
 
 
 
 int main()
 {
+	global_init();
 	jack_init();		// jack must be initialized before pulse
 	pulse_init();
 
+	pulse_start();		// FIXME: is pulse_start before jack_start better?
 	jack_start();
-	pulse_start();
 
 	// suspend main thread
 	pthread_mutex_t m = PTHREAD_MUTEX_INITIALIZER;

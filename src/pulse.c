@@ -6,12 +6,23 @@
  * 		eXerigumo Clanjor (哆啦比猫/兰威举) <cjxgm@126.com>
  */
 
-#ifndef __JOPANG$JACK__
-#define __JOPANG$JACK__
+#include <stdio.h>
+#include "pulse.h"
 
-void jack_init();
-void jack_start();
-void jack_close();
 
-#endif
+
+
+void pulse_init()
+{
+}
+
+
+void pulse_start()
+{
+}
+
+
+void pulse_close()
+{
+}
 

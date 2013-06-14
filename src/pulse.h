@@ -1,4 +1,4 @@
-// vim: ft=c noet ts=4 sw=4 sts=0
+// vim: noet ts=4 sw=4 sts=0
 
 /* Licensed under the MIT License.
  *
