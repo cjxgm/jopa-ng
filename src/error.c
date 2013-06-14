@@ -24,14 +24,22 @@ void throw(ErrorCode err)
 		[ERROR_JACK_ACTIVATE   ] = "jack_activate failed.",
 	};
 
-	if (err)
-		fprintf(stderr, "\e[1;31merror: \e[1;33m%s\e[0m\n",
-				error_code_to_string[err]);
+	if (err) error(error_code_to_string[err]);
 
 	jack_close();
 	pulse_close();
 	global_close();
 
 	exit(err);
+}
+
+void error(const char * msg)
+{
+	fprintf(stderr, "\e[1;31merror: \e[1;33m%s\e[0m\n", msg);
+}
+
+void warn(const char * msg)
+{
+	fprintf(stderr, "\e[1;35mwarning: \e[1;34m%s\e[0m\n", msg);
 }
 

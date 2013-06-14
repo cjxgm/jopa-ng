@@ -33,14 +33,18 @@ void jack_init()
 	}), NULL);
 
 	jack_set_buffer_size_callback(jack,
-		$(int, (jack_nframes_t nframes, void * $unused) {
+		$(int, (jack_nframes_t nframe, void * $unused) {
 			// this will be called once jack activated.
-//			dbuf_resize(global_dbuf_playback, nframes<<1);
+			dbuf_resize(global_dbuf_playback, nframe<<1);
 			return 0;
 		}), NULL);
 
 	jack_set_process_callback(jack,
-		$(int, (jack_nframes_t nframes, void * $unused) {
+		$(int, (jack_nframes_t nframe, void * $unused) {
+			float * buf0 = jack_port_get_buffer(ports_in[0], nframe);
+			float * buf1 = jack_port_get_buffer(ports_in[1], nframe);
+			if (dbuf_add_stereo(global_dbuf_playback, buf0, buf1, nframe))
+				warn("got stuck when playback.");
 			return 0;
 		}), NULL);
 
@@ -54,7 +58,6 @@ void jack_init()
 
 	// other setups
 	global_sample_rate = jack_get_sample_rate(jack);
-//	global_dbuf_playback = dbuf_new();
 }
 
 

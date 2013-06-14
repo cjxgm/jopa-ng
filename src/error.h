@@ -22,6 +22,8 @@ ErrorCode;
 
 
 void throw(ErrorCode err);
+void error(const char * msg);
+void warn(const char * msg);
 
 #endif
 
