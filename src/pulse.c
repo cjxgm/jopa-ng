@@ -27,27 +27,16 @@ static pthread_t   thread_capture;
 
 void pulse_init()
 {
-	{ // playback
-		pa_sample_spec ss = {
-			.format	  = PA_SAMPLE_FLOAT32,
-			.rate	  = global_sample_rate,	// that's why jack should
-											// init before pulse
-			.channels = 2,
-		};
-		playback = pa_simple_new(NULL, "jopa-ng", PA_STREAM_PLAYBACK,
-				NULL, "playback", &ss, NULL, NULL, NULL);
-	}
-
-	{ // capture	TODO: merge this to above code
-		pa_sample_spec ss = {
-			.format	  = PA_SAMPLE_FLOAT32,
-			.rate	  = global_sample_rate,	// that's why jack should
-											// init before pulse
-			.channels = 2,
-		};
-		capture = pa_simple_new(NULL, "jopa-ng", PA_STREAM_RECORD,
-				NULL, "capture", &ss, NULL, NULL, NULL);
-	}
+	pa_sample_spec ss = {
+		.format	  = PA_SAMPLE_FLOAT32,
+		.rate	  = global_sample_rate,	// that's why jack should
+										// init before pulse
+		.channels = 2,
+	};
+	playback = pa_simple_new(NULL, "jopa-ng", PA_STREAM_PLAYBACK,
+			NULL, "playback", &ss, NULL, NULL, NULL);
+	capture  = pa_simple_new(NULL, "jopa-ng", PA_STREAM_RECORD,
+			NULL, "capture", &ss, NULL, NULL, NULL);
 }
 
 

@@ -57,13 +57,7 @@ void jack_init()
 				float * R = jack_port_get_buffer(ports_out[1], nframe);
 				if (dbuf_get_stereo(global_dbuf_capture, L, R))
 					warn("got stuck when capture.");
-/*				float * buf = dbuf_used(global_dbuf_capture);
-				if (buf) {
-					bcopy(buf, jack_port_get_buffer(ports_out[0], nframe),
-						dbuf_size(global_dbuf_capture));
-					dbuf_unfill(global_dbuf_capture);
-				}
-*/			}
+			}
 
 			wake_up(global_suspend_pulse);
 			return 0;
