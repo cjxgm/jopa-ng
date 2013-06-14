@@ -42,7 +42,10 @@ void dbuf_resize(DBuf * dbuf, size_t length);
 
 // queries
 static inline size_t dbuf_length(DBuf * dbuf) { return dbuf->length; }
-//TODO: static inline size_t dbuf_size  (DBuf * dbuf) { return dbuf->length * sizeof(**dbuf->bufs); }
+static inline size_t dbuf_size  (DBuf * dbuf)
+{
+	return dbuf_length(dbuf) * sizeof(**dbuf->bufs);
+}
 
 // extended functions
 bool dbuf_add_stereo(DBuf * dbuf, float L[], float R[]);

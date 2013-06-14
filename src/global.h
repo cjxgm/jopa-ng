@@ -11,13 +11,15 @@
 
 #include <stdlib.h>
 #include "dbuf.h"
+#include "suspend.h"
 #include "misc.h"
 
 
 
 
-extern size_t global_sample_rate;
-extern DBuf * global_dbuf_playback;
+extern size_t    global_sample_rate;
+extern DBuf    * global_dbuf_playback;
+extern Suspend * global_suspend_playback;
 
 
 

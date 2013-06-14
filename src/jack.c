@@ -11,6 +11,7 @@
 #include "jack.h"
 #include "error.h"
 #include "global.h"
+#include "suspend.h"
 
 
 
@@ -45,6 +46,7 @@ void jack_init()
 			float * R = jack_port_get_buffer(ports_in[1], nframe);
 			if (dbuf_add_stereo(global_dbuf_playback, L, R))
 				warn("got stuck when playback.");
+			wake_up(global_suspend_playback);
 			return 0;
 		}), NULL);
 
