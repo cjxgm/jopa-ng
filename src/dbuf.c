@@ -97,6 +97,9 @@ void dbuf_resize(DBuf * dbuf, size_t length)
 		if (!dbuf->bufs[0] || !dbuf->bufs[1]) throw(ERROR_MALLOC);
 	}
 
+	dbuf->current    = 0;
+	dbuf->filled_cnt = 0;
+
 	dbuf_unlock(dbuf);
 }
 
