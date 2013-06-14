@@ -19,7 +19,10 @@
 void throw(ErrorCode err)
 {
 	static const char * error_code_to_string[] = {
-		[0] = NULL,
+		[ERROR_OK] = NULL,
+
+		[ERROR_MALLOC] = "cannot allocate memory.",
+
 		[ERROR_JACK_CLIENT_OPEN] = "jack_client_open failed.",
 		[ERROR_JACK_ACTIVATE   ] = "jack_activate failed.",
 	};
