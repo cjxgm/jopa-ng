@@ -72,7 +72,6 @@ void pulse_start()
 				memcpy(buf_unused, buf, sizeof(*buf) * buf_size);
 				dbuf_fill(global_dbuf_capture);
 			}
-//			else suspend(global_suspend_pulse);
 		}
 	}), NULL);
 }
