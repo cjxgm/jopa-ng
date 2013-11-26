@@ -7,6 +7,7 @@
  */
 
 #include <stdio.h>
+#include <string.h>
 #include <pthread.h>
 #include <pulse/simple.h>
 #include "pulse.h"
@@ -57,11 +58,18 @@ void pulse_start()
 
 	// capture
 	pthread_create(&thread_capture, NULL, (void *)$(void, () {
+		float * buf = NULL;
+		float   buf_size = 0;
 		while (1) {
-			float * buf = dbuf_unused(global_dbuf_capture);
-			if (buf) {
-				pa_simple_read(capture, buf,
-						dbuf_size(global_dbuf_capture), NULL);
+			if (buf_size != dbuf_size(global_dbuf_capture)) {
+				buf_size = dbuf_size(global_dbuf_capture);
+				if (buf) free(buf);
+				buf = malloc(sizeof(*buf) * buf_size);
+			}
+			pa_simple_read(capture, buf, buf_size, NULL);
+			float * buf_unused = dbuf_unused(global_dbuf_capture);
+			if (buf_unused) {
+				memcpy(buf_unused, buf, sizeof(*buf) * buf_size);
 				dbuf_fill(global_dbuf_capture);
 			}
 //			else suspend(global_suspend_pulse);
