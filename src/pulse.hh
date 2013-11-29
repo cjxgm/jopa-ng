@@ -35,8 +35,7 @@ namespace jopang
 		~Pulse()
 		{
 			running = false;
-			while (nexit != 2)
-				this_thread::yield();
+			while (nexit != 2) this_thread::yield();
 		}
 
 		void start()
@@ -46,7 +45,7 @@ namespace jopang
 				while (running) {
 					float buf[128];
 					if (buf_play->get(buf)) sus_play->suspend();
-					else pa_simple_write(playback, buf, sizeof(buf), NULL);
+					else pa_simple_write(playback, buf, sizeof(buf), nullptr);
 				}
 				pa_simple_free(playback);
 				nexit++;
@@ -56,7 +55,7 @@ namespace jopang
 			new thread([this]() {
 				while (running) {
 					float buf[1024];
-					pa_simple_read(capture, buf, sizeof(buf), NULL);
+					pa_simple_read(capture, buf, sizeof(buf), nullptr);
 					buf_cap->put(buf);
 				}
 				pa_simple_free(capture);

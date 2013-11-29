@@ -4,6 +4,6 @@
 
 void std::this_thread::exit()
 {
-	pthread_exit(NULL);
+	pthread_exit(nullptr);
 }
 
