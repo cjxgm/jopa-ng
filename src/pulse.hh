@@ -3,7 +3,6 @@
 #include <thread>
 #include <pulse/simple.h>
 #include "buffer.hh"
-#include "warn.hh"
 using namespace std;
 
 namespace jopang
@@ -26,8 +25,6 @@ namespace jopang
 				.rate	  = (unsigned int)sample_rate,
 				.channels = 2,
 			};
-			printf("%d", sample_rate);
-			getchar();
 			playback = pa_simple_new(nullptr, "jopa-ng", PA_STREAM_PLAYBACK,
 					nullptr, "playback", &ss, nullptr, nullptr, nullptr);
 			capture  = pa_simple_new(nullptr, "jopa-ng", PA_STREAM_RECORD,
@@ -47,12 +44,8 @@ namespace jopang
 			new thread([this]() {
 				while (running) {
 					float buf[1024];
-					if (buf_play->get(buf))
-						warn("got stuck when playback.");
-					else {
-						pa_simple_write(playback, buf, sizeof(buf), NULL);
-						pa_simple_drain(playback, NULL);
-					}
+					if (buf_play->get(buf)) this_thread::yield();
+					else pa_simple_write(playback, buf, sizeof(buf), NULL);
 				}
 				pa_simple_free(playback);
 				nexit++;

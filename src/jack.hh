@@ -3,7 +3,6 @@
 #include <jack/jack.h>
 #include <exception>
 #include "buffer.hh"
-#include "warn.hh"
 using namespace std;
 
 namespace jopang
@@ -15,7 +14,6 @@ namespace jopang
 		jack_port_t*   ports_out[2];
 		Buffer* buf_play;
 		Buffer* buf_cap;
-		int _sample_rate;
 
 		// exceptions
 		struct open_failed {};
@@ -41,11 +39,7 @@ namespace jopang
 
 			// register callbacks
 			jack_on_shutdown(jack, &static_shutdown, this);
-			jack_set_buffer_size_callback(jack, &static_buffer_size, this);
 			jack_set_process_callback(jack, &static_process, this);
-
-			// other setups
-			_sample_rate = jack_get_sample_rate(jack);
 		}
 
 		~Jack()
@@ -60,7 +54,7 @@ namespace jopang
 				throw activation_failed{};
 		}
 
-		int sample_rate() { return _sample_rate; }
+		int sample_rate() { return jack_get_sample_rate(jack); }
 
 		void buffer(Buffer* play, Buffer* cap)
 		{
@@ -70,11 +64,6 @@ namespace jopang
 
 	private:	// callbacks
 		void shutdown() { terminate(); }
-
-		void buffer_size(int nframe)
-		{
-			// FIXME: remove me
-		}
 
 		inline float* jack_buffer(jack_port_t* port, int nframe)
 		{
@@ -92,8 +81,7 @@ namespace jopang
 			{ // capture
 				auto L = jack_buffer(ports_out[0], nframe);
 				auto R = jack_buffer(ports_out[1], nframe);
-				if (buf_cap->get_stereo(L, R, nframe))
-					warn("got stuck when capture.");
+				buf_cap->get_stereo(L, R, nframe);
 			}
 		}
 
@@ -106,11 +94,6 @@ namespace jopang
 		static void static_shutdown(void* self)
 		{
 			cast(self)->shutdown();
-		}
-
-		static int static_buffer_size(jack_nframes_t nframe, void* self)
-		{
-			return (cast(self)->buffer_size(nframe), 0);
 		}
 
 		static int static_process(jack_nframes_t nframe, void* self)

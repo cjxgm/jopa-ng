@@ -1,50 +1,56 @@
 // vim: noet ts=4 sw=4 sts=0
 #pragma once
 #include <deque>
+#include <mutex>
 using namespace std;
 
 namespace jopang
 {
 	class Buffer
 	{
+		mutex m;
 		deque<float> buf;
 
 	public:
 		void put(float data[], unsigned int len)
 		{
+			printf("+ %u\n", len);
+			lock_guard<mutex> lock(m);
 			for (unsigned int i=0; i<len; i++)
 				buf.push_back(data[i]);
-			printf("+ -> %d\n", buf.size());
 		}
 
 		bool get(float data[], unsigned int len)
 		{
+			lock_guard<mutex> lock(m);
 			if (len > buf.size()) return true;	// underflow
 			for (unsigned int i=0; i<len; i++) {
 				data[i] = buf.front();
 				buf.pop_front();
 			}
-			printf("- -> %d\n", buf.size());
+			printf("- %u\n", len);
 			return false;
 		}
 
 		void put_stereo(float L[], float R[], unsigned int len)
 		{
+			printf("+ %u\n", len);
+			lock_guard<mutex> lock(m);
 			for (unsigned int i=0; i<len; i++) {
 				buf.push_back(L[i]);
 				buf.push_back(R[i]);
 			}
-			printf("+2-> %d\n", buf.size());
 		}
 
 		bool get_stereo(float L[], float R[], unsigned int len)
 		{
+			lock_guard<mutex> lock(m);
 			if (len*2 > buf.size()) return true;	// underflow
 			for (unsigned int i=0; i<len; i++) {
 				L[i] = buf.front(); buf.pop_front();
 				R[i] = buf.front(); buf.pop_front();
 			}
-			printf("-2-> %d\n", buf.size());
+			printf("- %u\n", len);
 			return false;
 		}
 
