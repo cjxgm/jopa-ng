@@ -1,12 +1,10 @@
 // vim: noet ts=4 sw=4 sts=0
 #include <mutex>
-#include "thread.hh"
+#include "thread.hh"	// for std::this_thread::exit()
 #include "jack.hh"
 #include "pulse.hh"
 #include "buffer.hh"
 using namespace std;
-
-
 
 
 int main()
