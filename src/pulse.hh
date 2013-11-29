@@ -13,6 +13,7 @@ namespace jopang
 		pa_simple* capture;
 		Buffer* buf_play;
 		Buffer* buf_cap;
+		Suspender* sus_play;
 
 		bool running{true};
 		int nexit{0};
@@ -43,8 +44,8 @@ namespace jopang
 			// playback
 			new thread([this]() {
 				while (running) {
-					float buf[1024];
-					if (buf_play->get(buf)) this_thread::yield();
+					float buf[128];
+					if (buf_play->get(buf)) sus_play->suspend();
 					else pa_simple_write(playback, buf, sizeof(buf), NULL);
 				}
 				pa_simple_free(playback);
@@ -62,6 +63,8 @@ namespace jopang
 				nexit++;
 			});
 		}
+
+		void suspender(Suspender* play) { sus_play = play; }
 
 		void buffer(Buffer* play, Buffer* cap)
 		{

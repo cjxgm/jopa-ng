@@ -14,7 +14,6 @@ namespace jopang
 	public:
 		void put(float data[], unsigned int len)
 		{
-			printf("+ %u\n", len);
 			lock_guard<mutex> lock(m);
 			for (unsigned int i=0; i<len; i++)
 				buf.push_back(data[i]);
@@ -28,13 +27,11 @@ namespace jopang
 				data[i] = buf.front();
 				buf.pop_front();
 			}
-			printf("- %u\n", len);
 			return false;
 		}
 
 		void put_stereo(float L[], float R[], unsigned int len)
 		{
-			printf("+ %u\n", len);
 			lock_guard<mutex> lock(m);
 			for (unsigned int i=0; i<len; i++) {
 				buf.push_back(L[i]);
@@ -50,7 +47,6 @@ namespace jopang
 				L[i] = buf.front(); buf.pop_front();
 				R[i] = buf.front(); buf.pop_front();
 			}
-			printf("- %u\n", len);
 			return false;
 		}
 

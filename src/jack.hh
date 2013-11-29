@@ -3,6 +3,7 @@
 #include <jack/jack.h>
 #include <exception>
 #include "buffer.hh"
+#include "suspender.hh"
 using namespace std;
 
 namespace jopang
@@ -14,6 +15,7 @@ namespace jopang
 		jack_port_t*   ports_out[2];
 		Buffer* buf_play;
 		Buffer* buf_cap;
+		Suspender* sus_play;
 
 		// exceptions
 		struct open_failed {};
@@ -56,6 +58,8 @@ namespace jopang
 
 		int sample_rate() { return jack_get_sample_rate(jack); }
 
+		void suspender(Suspender* play) { sus_play = play; }
+
 		void buffer(Buffer* play, Buffer* cap)
 		{
 			buf_play = play;
@@ -76,6 +80,7 @@ namespace jopang
 				auto L = jack_buffer(ports_in[0], nframe);
 				auto R = jack_buffer(ports_in[1], nframe);
 				buf_play->put_stereo(L, R, nframe);
+				sus_play->resume();
 			}
 
 			{ // capture
