@@ -50,6 +50,8 @@ namespace jopang
 			return false;
 		}
 
+		inline size_t size() { return buf.size(); }
+
 		// helper functions
 		template <class T, unsigned int N>
 		inline void put(T (&data)[N]) { put(data, N); }

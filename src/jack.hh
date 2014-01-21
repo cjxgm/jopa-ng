@@ -8,6 +8,7 @@ using namespace std;
 
 namespace jopang
 {
+	int noutnot = 0;
 	class Jack
 	{
 		jack_client_t* jack;
@@ -76,6 +77,8 @@ namespace jopang
 
 		void process(int nframe)
 		{
+			auto last_play_size = buf_play->size();
+
 			{ // playback
 				auto L = jack_buffer(ports_in[0], nframe);
 				auto R = jack_buffer(ports_in[1], nframe);
@@ -87,6 +90,14 @@ namespace jopang
 				auto L = jack_buffer(ports_out[0], nframe);
 				auto R = jack_buffer(ports_out[1], nframe);
 				buf_cap->get_stereo(L, R, nframe);
+			}
+
+			if (noutnot++ == 50) {
+				printf("\rlatency[  play|cap   ] = [%6lu|%-6lu]",
+						nframe + last_play_size / 2,
+						nframe + buf_cap->size() / 2);
+				fflush(stdout);
+				noutnot = 0;
 			}
 		}
 
@@ -103,7 +114,8 @@ namespace jopang
 
 		static int static_process(jack_nframes_t nframe, void* self)
 		{
-			return (cast(self)->process(nframe), 0);
+			cast(self)->process(nframe);
+			return 0;
 		}
 	};
 };

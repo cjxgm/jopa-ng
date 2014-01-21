@@ -9,8 +9,6 @@ namespace jopang
 {
 	class Pulse
 	{
-		pa_simple* playback;
-		pa_simple* capture;
 		Buffer* buf_play;
 		Buffer* buf_cap;
 		Suspender* sus_play;
@@ -18,22 +16,19 @@ namespace jopang
 		bool running{true};
 		int nexit{0};
 
+		pa_sample_spec ss;
+
 	public:
 		Pulse(int sample_rate)
 		{
-			pa_sample_spec ss = {
-				.format	  = PA_SAMPLE_FLOAT32,
-				.rate	  = (unsigned int)sample_rate,
-				.channels = 2,
-			};
-			playback = pa_simple_new(nullptr, "jopa-ng", PA_STREAM_PLAYBACK,
-					nullptr, "playback", &ss, nullptr, nullptr, nullptr);
-			capture  = pa_simple_new(nullptr, "jopa-ng", PA_STREAM_RECORD,
-					nullptr, "capture", &ss, nullptr, nullptr, nullptr);
+			ss.format   = PA_SAMPLE_FLOAT32;
+			ss.rate     = (unsigned int)sample_rate;
+			ss.channels = 2;
 		}
 
 		~Pulse()
 		{
+			nexit = 0;
 			running = false;
 			while (nexit != 2) this_thread::yield();
 		}
@@ -42,6 +37,9 @@ namespace jopang
 		{
 			// playback
 			new thread([this]() {
+				auto playback = pa_simple_new(nullptr, "jopa-ng",
+						PA_STREAM_PLAYBACK, nullptr, "playback", &ss,
+						nullptr, nullptr, nullptr);
 				while (running) {
 					float buf[128];
 					if (buf_play->get(buf)) sus_play->suspend();
@@ -53,8 +51,11 @@ namespace jopang
 
 			// capture
 			new thread([this]() {
+				auto capture = pa_simple_new(nullptr, "jopa-ng",
+						PA_STREAM_RECORD, nullptr, "capture", &ss,
+						nullptr, nullptr, nullptr);
 				while (running) {
-					float buf[1024];
+					float buf[128];
 					pa_simple_read(capture, buf, sizeof(buf), nullptr);
 					buf_cap->put(buf);
 				}

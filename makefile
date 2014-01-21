@@ -114,7 +114,7 @@ endef
 #!do-compile: $(OBJ)
 #!remove-makefile: subs-remove-makefile
 #!	@rm -f makefile
-#!commit: remove-makefile
+#!commit: clean remove-makefile
 #!	@echo -e "\e[0;32mcommit\e[0m"
 #!	@git add -A .
 #!	@git diff --cached
