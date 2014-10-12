@@ -90,21 +90,19 @@ namespace jopang
 				auto L = jack_buffer(ports_out[0], nframe);
 				auto R = jack_buffer(ports_out[1], nframe);
 				buf_cap->get_stereo(L, R, nframe);
-				if (buf_cap->size() > size_t(8*nframe)) {
-					printf("\nlatency = [\e[1;31m%-6lu\e[0m] "
-							"\e[1;33mframedropped\e[0m",
-							nframe + buf_cap->size() / 2);
+				if (buf_cap->size() > size_t(2*nframe)) {
+					printf(" \e[1;33mframedropped\e[0m\n");
 					fflush(stdout);
 					while (!buf_cap->get_stereo(L, R, nframe));
 				}
 			}
 
-			if (noutnot++ == 50) {
+			if (noutnot++ == 5) {
 				printf("\rlatency[\e[1;32m  play\e[1;37m|"
-						"\e[1;31mcap   \e[0m] = [\e[1;32m%6lu\e[1;37m|"
-						"\e[1;31m%-6lu\e[0m]",
-						nframe + last_play_size / 2,
-						nframe + buf_cap->size() / 2);
+						"\e[1;31mcap   \e[0m] = [\e[1;32m%+6d\e[1;37m|"
+						"\e[1;31m%+-6d\e[0m]",
+						(int)last_play_size / 2,
+						(int)buf_cap->size() / 2);
 				fflush(stdout);
 				noutnot = 0;
 			}

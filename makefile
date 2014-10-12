@@ -18,10 +18,10 @@ MAKEC = make --no-print-directory -C
 ifndef CWD
 export CWD = $(shell $(MAKEC) .. print-root-dir)
 endif
-CC = g++
-LD = g++
+CC = clang++
+LD = $(CC)
 SUFFIX = cc
-FLG = -Wall -O3 -march=native -std=gnu++0x -pthread \
+FLG = -Wall -Wextra -O3 -march=native -std=gnu++1y -pthread \
 			$(shell pkg-config --cflags jack libpulse-simple)
 LIB = $(shell pkg-config --libs jack libpulse-simple)
 

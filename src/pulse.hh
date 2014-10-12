@@ -17,13 +17,18 @@ namespace jopang
 		int nexit{0};
 
 		pa_sample_spec ss;
+		static constexpr auto buf_mono_len = 1024;
+		static constexpr auto buf_len = buf_mono_len*2;
+		static constexpr auto buf_nbyte = buf_len * sizeof(float);
 
 	public:
-		Pulse(int sample_rate)
+		Pulse(int sample_rate) :
+			ss {
+				.format   = PA_SAMPLE_FLOAT32,
+				.rate     = (unsigned int)sample_rate,
+				.channels = 2,
+			}
 		{
-			ss.format   = PA_SAMPLE_FLOAT32;
-			ss.rate     = (unsigned int)sample_rate;
-			ss.channels = 2;
 		}
 
 		~Pulse()
@@ -37,13 +42,13 @@ namespace jopang
 		{
 			// playback
 			new thread([this]() {
-				auto playback = pa_simple_new(nullptr, "jopa-ng",
-						PA_STREAM_PLAYBACK, nullptr, "playback", &ss,
-						nullptr, nullptr, nullptr);
+				auto playback = pa_simple_new({}, "jopa-ng",
+						PA_STREAM_PLAYBACK, {}, "playback", &ss,
+						{}, {}, {});
 				while (running) {
-					float buf[128];
+					float buf[buf_len];
 					if (buf_play->get(buf)) sus_play->suspend();
-					else pa_simple_write(playback, buf, sizeof(buf), nullptr);
+					else pa_simple_write(playback, buf, buf_nbyte, {});
 				}
 				pa_simple_free(playback);
 				nexit++;
@@ -51,12 +56,16 @@ namespace jopang
 
 			// capture
 			new thread([this]() {
-				auto capture = pa_simple_new(nullptr, "jopa-ng",
-						PA_STREAM_RECORD, nullptr, "capture", &ss,
-						nullptr, nullptr, nullptr);
+				pa_buffer_attr ba {
+					.maxlength = uint32_t(-1),
+					.fragsize  = buf_nbyte,
+				};
+				auto capture = pa_simple_new({}, "jopa-ng",
+						PA_STREAM_RECORD, {}, "capture", &ss,
+						{}, &ba, {});
 				while (running) {
-					float buf[128];
-					pa_simple_read(capture, buf, sizeof(buf), nullptr);
+					float buf[buf_len];
+					pa_simple_read(capture, buf, buf_nbyte, nullptr);
 					buf_cap->put(buf);
 				}
 				pa_simple_free(capture);
